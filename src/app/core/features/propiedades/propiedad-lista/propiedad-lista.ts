@@ -8,28 +8,8 @@ import { TipoPropiedad, EstadoPropiedad } from '../../../models/propiedad.model'
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './propiedad-lista.html',
-  styles: [`
-    .table th {
-      font-weight: 600;
-      color: #495057;
-      border-top: none;
-    }
-    
-    .badge-disponible {
-      background-color: #d1e7dd;
-      color: #0f5132;
-    }
-    
-    .badge-ocupado {
-      background-color: #cfe2ff;
-      color: #084298;
-    }
-    
-    .badge-mantenimiento {
-      background-color: #fff3cd;
-      color: #664d03;
-    }
-  `]
+  styleUrls: ['./propiedad-lista.scss']
+
 })
 export class PropiedadListaComponent {
   // Datos falsos para propiedades

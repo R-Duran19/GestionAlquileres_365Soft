@@ -6,6 +6,7 @@ import { InquilinoListaComponent } from './core/features/inquilinos/inquilino-li
 import { ContratoListaComponent } from './core/features/contratos/contrato-lista/contrato-lista';
 import { PagoListaComponent } from './core/features/pagos/pago-lista/pago-lista';
 import { MantenimientoListaComponent } from './core/features/mantenimiento/mantenimiento-lista/mantenimiento-lista';
+import { MantenimientoFormComponent } from './core/features/mantenimiento/mantenimiento-form/mantenimiento-form';
 import { InquilinoFormComponent } from './core/features/inquilinos/inquilino-form/inquilino-form';
 import { ContratoFormComponent } from './core/features/contratos/contrato-form/contrato-form';
 import { PagoFormComponent } from './core/features/pagos/pago-form/pago-form';
@@ -68,11 +69,11 @@ export const routes: Routes = [
       },
       {
         path: 'mantenimiento/nuevos',
-        component: MantenimientoListaComponent
+        component: MantenimientoFormComponent
       },
       {
         path: 'mantenimiento/editar',
-        component: MantenimientoListaComponent
+        component: MantenimientoFormComponent
       },
       {
         path: '',

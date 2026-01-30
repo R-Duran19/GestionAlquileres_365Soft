@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
@@ -7,11 +7,17 @@ import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule,  BaseChartDirective],
+  imports: [CommonModule,  BaseChartDirective, RouterLink],
   templateUrl: './dashboard-page.html',
   styleUrls: ['./dashboard-page.scss']
 })
 export class DashboardPageComponent implements OnInit {
+  isBrowser = false;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+
   // Gráfico de Línea - Ingresos Mensuales
   public lineChartData: ChartConfiguration['data'] = {
     datasets: [

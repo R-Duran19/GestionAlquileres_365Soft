@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-mantenimiento-form',
   standalone: true,
-  imports: [CommonModule, FormsModule,],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './mantenimiento-form.html',
   styleUrls: ['./mantenimiento-form.scss'],
 })

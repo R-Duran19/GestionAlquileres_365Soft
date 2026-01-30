@@ -123,7 +123,7 @@
               </div>
             </div>
             <div class="card-body">
-              <div style="height: 300px;">
+              <div style="height: 300px;" *ngIf="isBrowser">
                 <canvas baseChart
                   [data]="lineChartData"
                   [options]="lineChartOptions"
@@ -141,7 +141,7 @@
               <h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Estado de Propiedades</h6>
             </div>
             <div class="card-body">
-              <div style="height: 250px;" class="mb-4">
+              <div style="height: 250px;" class="mb-4" *ngIf="isBrowser">
                 <canvas baseChart
                   [data]="doughnutChartData"
                   [options]="doughnutChartOptions"
