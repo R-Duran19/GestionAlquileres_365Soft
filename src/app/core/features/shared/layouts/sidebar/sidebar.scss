@@ -1,0 +1,21 @@
+ .sidebar {
+   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+   position: fixed;
+   top: 0;
+   left: 0;
+   height: 100vh;
+   width: 250px;
+   z-index: 1020;
+    }
+    
+    .nav-link {
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .sidebar-content {
+      overflow-y: auto;
+    }

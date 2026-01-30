@@ -1,0 +1,19 @@
+.form-control:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .badge-activo {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .badge-en-proceso {
+      background-color: #cff4fc;
+      color: #055160;
+    }
+    
+    .badge-inactivo {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }

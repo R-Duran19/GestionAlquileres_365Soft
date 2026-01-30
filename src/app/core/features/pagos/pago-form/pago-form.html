@@ -1,0 +1,269 @@
+  <div class="container-fluid">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a routerLink="/pagos">Pagos</a></li>
+              <li class="breadcrumb-item active">Registrar Pago</li>
+            </ol>
+          </nav>
+          <h2 class="mb-0 mt-2">Registrar Nuevo Pago</h2>
+          <p class="text-muted mb-0">Registre un pago recibido de un inquilino</p>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary me-2" routerLink="/pagos">
+            <i class="bi bi-x-circle me-2"></i>Cancelar
+          </button>
+          <button class="btn btn-primary" (click)="registrarPago()">
+            <i class="bi bi-cash-coin me-2"></i>Registrar Pago
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+          <!-- Información del Pago -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información del Pago</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Inquilino *</label>
+                  <select class="form-select" [(ngModel)]="pago.inquilinoId" (change)="cargarPagosPendientes()">
+                    <option value="">Seleccionar inquilino...</option>
+                    <option *ngFor="let inquilino of inquilinos" [value]="inquilino.id">
+                      {{ inquilino.nombre }} - {{ inquilino.propiedad }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Propiedad *</label>
+                  <select class="form-select" [(ngModel)]="pago.propiedadId">
+                    <option value="">Seleccionar propiedad...</option>
+                    <option *ngFor="let propiedad of propiedades" [value]="propiedad.id">
+                      {{ propiedad.nombre }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Mes *</label>
+                  <select class="form-select" [(ngModel)]="pago.mes">
+                    <option value="">Seleccionar mes...</option>
+                    <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Año *</label>
+                  <select class="form-select" [(ngModel)]="pago.anio">
+                    <option value="">Seleccionar año...</option>
+                    <option *ngFor="let anio of anios" [value]="anio">{{ anio }}</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Monto *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" [(ngModel)]="pago.monto" 
+                           placeholder="0.00" min="0" step="0.01">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label">Concepto *</label>
+                  <input type="text" class="form-control" [(ngModel)]="pago.concepto" 
+                         placeholder="Ej: Alquiler Enero 2024, Depósito de garantía...">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label">Descripción</label>
+                  <textarea class="form-control" rows="2" [(ngModel)]="pago.descripcion"
+                            placeholder="Descripción adicional del pago..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Método de Pago -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-credit-card me-2"></i>Método de Pago</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Método *</label>
+                  <select class="form-select" [(ngModel)]="pago.metodoPago">
+                    <option value="">Seleccionar método...</option>
+                    <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha del Pago *</label>
+                  <input type="date" class="form-control" [(ngModel)]="pago.fechaPago">
+                </div>
+                <div class="col-md-6" *ngIf="pago.metodoPago === 'TRANSFERENCIA'">
+                  <label class="form-label">Número de Transacción</label>
+                  <input type="text" class="form-control" [(ngModel)]="pago.numeroTransaccion" 
+                         placeholder="Número de referencia">
+                </div>
+                <div class="col-md-6" *ngIf="pago.metodoPago === 'TARJETA_CREDITO'">
+                  <label class="form-label">Últimos 4 dígitos</label>
+                  <input type="text" class="form-control" [(ngModel)]="pago.numeroTarjeta" 
+                         placeholder="XXXX" maxlength="4">
+                </div>
+                <div class="col-md-12" *ngIf="pago.metodoPago === 'CHEQUE'">
+                  <label class="form-label">Número de Cheque</label>
+                  <input type="text" class="form-control" [(ngModel)]="pago.numeroCheque" 
+                         placeholder="Número de cheque">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comprobante -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-receipt me-2"></i>Comprobante</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Subir Comprobante (Opcional)</label>
+                <div class="input-group">
+                  <input type="file" class="form-control" id="comprobante" accept=".pdf,.jpg,.png">
+                  <button class="btn btn-outline-secondary" type="button" (click)="simularSubida()">
+                    <i class="bi bi-upload me-1"></i>Subir
+                  </button>
+                </div>
+                <small class="text-muted">Formatos aceptados: PDF, JPG, PNG (Máx. 5MB)</small>
+              </div>
+              
+              <div class="mb-3" *ngIf="pago.comprobanteUrl">
+                <label class="form-label">Comprobante Actual</label>
+                <div class="alert alert-success d-flex align-items-center">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  <div>
+                    Comprobante subido: <strong>{{ pago.comprobanteUrl }}</strong>
+                    <button class="btn btn-sm btn-outline-danger ms-3" (click)="pago.comprobanteUrl = ''">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <!-- Resumen -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Resumen del Pago</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6 class="text-muted mb-2">Detalles</h6>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Monto:</span>
+                  <span class="fw-bold text-success">${{ pago.monto || '0.00' }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>Comisión (2%):</span>
+                  <span class="text-muted">${{ calcularComision() }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span>IVA (12%):</span>
+                  <span class="text-muted">${{ calcularIVA() }}</span>
+                </div>
+                <div class="d-flex justify-content-between fw-bold border-top pt-2">
+                  <span>Total a recibir:</span>
+                  <span class="text-primary">${{ calcularTotal() }}</span>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <h6 class="text-muted mb-2">Estado</h6>
+                <div class="d-flex align-items-center">
+                  <div class="rounded-circle bg-success me-2" style="width: 10px; height: 10px;"></div>
+                  <span class="fw-medium">Pago Recibido</span>
+                </div>
+                <small class="text-muted">El pago será registrado como completado.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagos Pendientes -->
+          <div class="card mb-4" *ngIf="pagosPendientes.length > 0">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Pagos Pendientes</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action" 
+                   *ngFor="let pendiente of pagosPendientes" (click)="seleccionarPendiente(pendiente)">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ pendiente.mes }} {{ pendiente.anio }}</h6>
+                    <span class="badge bg-warning">${{ pendiente.monto }}</span>
+                  </div>
+                  <small class="text-muted">Vence: {{ pendiente.fechaVencimiento }}</small>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración Rápida -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-lightning me-2"></i>Configuración Rápida</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Estado del Pago</label>
+                <select class="form-select" [(ngModel)]="pago.estado">
+                  <option value="PAGADO">Pagado</option>
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="PARCIAL">Parcial</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Notificar al Inquilino</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="pago.notificarInquilino">
+                  <label class="form-check-label">
+                    Enviar recibo por email
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Recordatorio</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="pago.crearRecordatorio">
+                  <label class="form-check-label">
+                    Crear recordatorio para próximo pago
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-outline-secondary" routerLink="/pagos">
+          <i class="bi bi-arrow-left me-2"></i>Volver a Pagos
+        </button>
+        <div class="btn-group">
+          <button class="btn btn-outline-primary" (click)="guardarBorrador()">
+            <i class="bi bi-save me-2"></i>Guardar Borrador
+          </button>
+          <button class="btn btn-primary" (click)="registrarPago()">
+            <i class="bi bi-cash-stack me-2"></i>Registrar Pago
+          </button>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,45 @@
+.table th {
+      font-weight: 600;
+      color: #495057;
+      border-top: none;
+    }
+    
+    .badge-reportado {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }
+    
+    .badge-en-proceso {
+      background-color: #fff3cd;
+      color: #664d03;
+    }
+    
+    .badge-completado {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .badge-prioridad-baja {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .badge-prioridad-media {
+      background-color: #fff3cd;
+      color: #664d03;
+    }
+    
+    .badge-prioridad-alta {
+      background-color: #f8d7da;
+      color: #842029;
+    }
+    
+    .badge-prioridad-critica {
+      background-color: #dc3545;
+      color: white;
+    }
+    
+    .card-body {
+      overflow-y: auto;
+      max-height: 400px;
+    }

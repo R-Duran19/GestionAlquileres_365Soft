@@ -1,0 +1,39 @@
+.table th {
+      font-weight: 600;
+      color: #495057;
+      border-top: none;
+    }
+    
+    .nav-tabs .nav-link {
+      color: #495057;
+      cursor: pointer;
+    }
+    
+    .nav-tabs .nav-link.active {
+      font-weight: 600;
+    }
+    
+    .badge-activo {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .badge-pendiente {
+      background-color: #fff3cd;
+      color: #664d03;
+    }
+    
+    .badge-vencido {
+      background-color: #f8d7da;
+      color: #842029;
+    }
+    
+    .badge-terminado {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }
+    
+    .badge-cancelado {
+      background-color: #d3d3d3;
+      color: #666;
+    }

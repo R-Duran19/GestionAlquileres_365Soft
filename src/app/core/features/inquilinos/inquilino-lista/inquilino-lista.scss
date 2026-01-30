@@ -1,0 +1,35 @@
+.table th {
+      font-weight: 600;
+      color: #495057;
+      border-top: none;
+    }
+    
+    .badge-activo {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .badge-moroso {
+      background-color: #f8d7da;
+      color: #842029;
+    }
+    
+    .badge-inactivo {
+      background-color: #e2e3e5;
+      color: #41464b;
+    }
+    
+    .badge-en-proceso {
+      background-color: #cff4fc;
+      color: #055160;
+    }
+    
+    .pago-al-dia {
+      color: #198754;
+      font-weight: 600;
+    }
+    
+    .pago-pendiente {
+      color: #dc3545;
+      font-weight: 600;
+    }

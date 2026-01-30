@@ -1,0 +1,318 @@
+    <div class="container-fluid">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a routerLink="/contratos">Contratos</a></li>
+              <li class="breadcrumb-item active">Nuevo Contrato</li>
+            </ol>
+          </nav>
+          <h2 class="mb-0 mt-2">Generar Nuevo Contrato</h2>
+          <p class="text-muted mb-0">Complete la información para crear un contrato de alquiler</p>
+        </div>
+        <div>
+          <button class="btn btn-outline-secondary me-2" routerLink="/contratos">
+            <i class="bi bi-x-circle me-2"></i>Cancelar
+          </button>
+          <button class="btn btn-primary" (click)="generarContrato()">
+            <i class="bi bi-file-earmark-text me-2"></i>Generar Contrato
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+          <!-- Selección de Propiedad e Inquilino -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-house-door me-2"></i>Selección de Propiedad e Inquilino</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Propiedad *</label>
+                  <select class="form-select" [(ngModel)]="contrato.propiedadId">
+                    <option value="">Seleccionar propiedad...</option>
+                    <option *ngFor="let propiedad of propiedades" [value]="propiedad.id">
+                      {{ propiedad.nombre }} - {{ propiedad.direccion }}
+                    </option>
+                  </select>
+                  <div class="mt-2" *ngIf="propiedadSeleccionada">
+                    <small class="text-muted">
+                      <i class="bi bi-info-circle me-1"></i>
+                      {{ propiedadSeleccionada.detalles }}
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Inquilino *</label>
+                  <select class="form-select" [(ngModel)]="contrato.inquilinoId" (change)="cargarInquilino($event)">
+                    <option value="">Seleccionar inquilino...</option>
+                    <option *ngFor="let inquilino of inquilinos" [value]="inquilino.id">
+                      {{ inquilino.nombre }} {{ inquilino.apellido }} - {{ inquilino.documento }}
+                    </option>
+                  </select>
+                  <div class="mt-2" *ngIf="inquilinoSeleccionado">
+                    <small class="text-muted">
+                      <i class="bi bi-person me-1"></i>
+                      {{ inquilinoSeleccionado.contacto }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Período del Contrato -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-calendar-range me-2"></i>Período del Contrato</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Inicio *</label>
+                  <input type="date" class="form-control" [(ngModel)]="contrato.fechaInicio" 
+                         (change)="calcularFechaFin()">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Duración (meses) *</label>
+                  <select class="form-select" [(ngModel)]="contrato.duracionMeses" (change)="calcularFechaFin()">
+                    <option value="1">1 mes</option>
+                    <option value="3">3 meses</option>
+                    <option value="6">6 meses</option>
+                    <option value="12" selected>12 meses</option>
+                    <option value="24">24 meses</option>
+                    <option value="0">Indefinido</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Fin</label>
+                  <input type="date" class="form-control" [(ngModel)]="contrato.fechaFin" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Tipo de Contrato *</label>
+                  <select class="form-select" [(ngModel)]="contrato.tipoContrato">
+                    <option value="FIJO">Contrato Fijo</option>
+                    <option value="INDEFINIDO">Contrato Indefinido</option>
+                    <option value="TEMPORAL">Contrato Temporal</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Términos Financieros -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Términos Financieros</h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Precio de Alquiler Mensual *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" [(ngModel)]="contrato.precioAlquiler" 
+                           placeholder="0.00" min="0" step="0.01">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Depósito de Garantía *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" [(ngModel)]="contrato.depositoGarantia" 
+                           placeholder="0.00" min="0" step="0.01">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Día de Pago Mensual *</label>
+                  <select class="form-select" [(ngModel)]="contrato.diaPago">
+                    <option *ngFor="let dia of diasDelMes" [value]="dia">{{ dia }}</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Moneda *</label>
+                  <select class="form-select" [(ngModel)]="contrato.moneda">
+                    <option value="USD">USD - Dólar Estadounidense</option>
+                    <option value="EUR">EUR - Euro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Términos Adicionales -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-file-text me-2"></i>Términos y Condiciones Adicionales</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Cláusulas Especiales</label>
+                <textarea class="form-control" rows="3" 
+                          placeholder="Agregue cláusulas especiales o términos adicionales..."
+                          [(ngModel)]="contrato.clausulasEspeciales"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Servicios Incluidos</label>
+                <div class="row">
+                  <div class="col-md-4" *ngFor="let servicio of servicios">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" 
+                             [id]="'servicio-' + servicio"
+                             [checked]="contrato.serviciosIncluidos.includes(servicio)"
+                             (change)="toggleServicio(servicio, $event)">
+                      <label class="form-check-label" [for]="'servicio-' + servicio">
+                        {{ servicio }}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Responsabilidades del Inquilino</label>
+                <textarea class="form-control" rows="2"
+                          placeholder="Especifique responsabilidades adicionales del inquilino..."
+                          [(ngModel)]="contrato.responsabilidadesInquilino"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar - Resumen y Acciones -->
+        <div class="col-lg-4">
+          <!-- Resumen del Contrato -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-eye me-2"></i>Resumen del Contrato</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6 class="text-muted mb-2">Propiedad</h6>
+                <p class="mb-1 fw-medium">{{ propiedadSeleccionada?.nombre || 'No seleccionada' }}</p>
+                <small class="text-muted">{{ propiedadSeleccionada?.direccion || 'Dirección no disponible' }}</small>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="text-muted mb-2">Inquilino</h6>
+                <p class="mb-1 fw-medium">{{ inquilinoSeleccionado?.nombre || 'No seleccionado' }}</p>
+                <small class="text-muted">{{ inquilinoSeleccionado?.documento || 'Documento no disponible' }}</small>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="text-muted mb-2">Período</h6>
+                <p class="mb-1">
+                  <span class="fw-medium">{{ contrato.fechaInicio || 'No definida' }}</span> 
+                  a 
+                  <span class="fw-medium">{{ contrato.fechaFin || 'No definida' }}</span>
+                </p>
+                <small class="text-muted">{{ contrato.duracionMeses || '0' }} meses</small>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="text-muted mb-2">Términos Financieros</h6>
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Alquiler mensual:</span>
+                  <span class="fw-medium text-success">${{ contrato.precioAlquiler || '0' }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Depósito:</span>
+                  <span class="fw-medium">${{ contrato.depositoGarantia || '0' }}</span>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 border-top">
+                <div class="d-flex justify-content-between fw-bold">
+                  <span>Total Inicial:</span>
+                  <span class="text-primary">${{ calcularTotalInicial() }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plantillas de Contrato -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-file-earmark me-2"></i>Plantillas de Contrato</h6>
+            </div>
+            <div class="card-body">
+              <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action" 
+                   *ngFor="let plantilla of plantillas" (click)="cargarPlantilla(plantilla)">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ plantilla.nombre }}</h6>
+                    <small class="text-muted">{{ plantilla.tipo }}</small>
+                  </div>
+                  <p class="mb-1 small text-muted">{{ plantilla.descripcion }}</p>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración Adicional -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-gear me-2"></i>Configuración Adicional</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Estado del Contrato</label>
+                <select class="form-select" [(ngModel)]="contrato.estado">
+                  <option value="PENDIENTE">Pendiente de Firma</option>
+                  <option value="ACTIVO">Activo</option>
+                  <option value="EN_REVISION">En Revisión</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Renovación Automática</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="contrato.renovacionAutomatica">
+                  <label class="form-check-label">
+                    Habilitar renovación automática
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Notificaciones</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="contrato.notificarVencimiento" checked>
+                  <label class="form-check-label">
+                    Notificar antes del vencimiento
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Recordatorios de Pago</label>
+                <div class="input-group">
+                  <span class="input-group-text">Días antes:</span>
+                  <input type="number" class="form-control" [(ngModel)]="contrato.diasRecordatorio" min="1" max="10" value="3">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-outline-secondary" routerLink="/contratos">
+          <i class="bi bi-arrow-left me-2"></i>Volver a Contratos
+        </button>
+        <div class="btn-group">
+          <button class="btn btn-outline-primary" (click)="guardarBorrador()">
+            <i class="bi bi-save me-2"></i>Guardar Borrador
+          </button>
+          <button class="btn btn-primary" (click)="generarContrato()">
+            <i class="bi bi-file-earmark-pdf me-2"></i>Generar y Enviar
+          </button>
+        </div>
+      </div>
+    </div>

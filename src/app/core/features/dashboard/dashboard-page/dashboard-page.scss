@@ -1,0 +1,39 @@
+.timeline {
+      position: relative;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: #e9ecef;
+    }
+    
+    .timeline-item {
+      position: relative;
+    }
+    
+    .timeline-icon {
+      z-index: 1;
+    }
+    
+    .progress {
+      border-radius: 10px;
+    }
+    
+    .progress-bar {
+      border-radius: 10px;
+    }
+    
+    .card {
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      border: 1px solid #e9ecef;
+    }
+    
+    .card:hover {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      transition: box-shadow 0.3s ease;
+    }

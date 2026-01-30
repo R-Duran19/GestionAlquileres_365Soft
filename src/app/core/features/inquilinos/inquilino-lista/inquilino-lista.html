@@ -1,0 +1,291 @@
+ <div class="container-fluid">
+      <!-- Header con acciones -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Inquilinos</h2>
+          <p class="text-muted mb-0">Gestión de arrendatarios</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Buscar inquilinos...">
+          </div>
+          <button class="btn btn-primary">
+            <i class="bi bi-person-plus me-2"></i>
+            Nuevo Inquilino
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Resumen -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card border-primary border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-people-fill text-primary fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Total Inquilinos</h6>
+                  <h3 class="mb-0">{{ inquilinos.length }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-success border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-check-circle text-success fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Activos</h6>
+                  <h3 class="mb-0 text-success">{{ contarPorEstado('ACTIVO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-warning border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Morosos</h6>
+                  <h3 class="mb-0 text-warning">{{ contarPorEstado('MOROSO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-info border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-clock-history text-info fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">En Proceso</h6>
+                  <h3 class="mb-0 text-info">{{ contarPorEstado('EN_PROCESO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros Rápidos -->
+      <div class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-outline-primary active">
+            Todos <span class="badge bg-primary ms-1">{{ inquilinos.length }}</span>
+          </button>
+          <button class="btn btn-outline-success">
+            Activos <span class="badge bg-success ms-1">{{ contarPorEstado('ACTIVO') }}</span>
+          </button>
+          <button class="btn btn-outline-warning">
+            Morosos <span class="badge bg-warning ms-1">{{ contarPorEstado('MOROSO') }}</span>
+          </button>
+          <button class="btn btn-outline-secondary">
+            Inactivos <span class="badge bg-secondary ms-1">{{ contarPorEstado('INACTIVO') }}</span>
+          </button>
+          <button class="btn btn-outline-info">
+            En Proceso <span class="badge bg-info ms-1">{{ contarPorEstado('EN_PROCESO') }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Inquilinos -->
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Inquilino</th>
+                  <th>Contacto</th>
+                  <th>Documento</th>
+                  <th>Propiedades</th>
+                  <th>Estado</th>
+                  <th>Pagos</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inquilino of inquilinos">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="rounded-circle bg-light me-3 d-flex align-items-center justify-content-center" 
+                           style="width: 50px; height: 50px;">
+                        <i class="bi bi-person fs-4 text-primary"></i>
+                      </div>
+                      <div>
+                        <strong class="d-block">
+                          {{ inquilino.informacionPersonal.nombre }} {{ inquilino.informacionPersonal.apellido }}
+                        </strong>
+                        <small class="text-muted">ID: {{ inquilino.id }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-envelope me-2 text-muted"></i>
+                        <small>{{ inquilino.informacionContacto.email }}</small>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-telephone me-2 text-muted"></i>
+                        <small>{{ inquilino.informacionContacto.telefono }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <div class="badge bg-light text-dark">
+                        {{ inquilino.informacionPersonal.tipoDocumento }}
+                      </div>
+                      <div class="mt-1">{{ inquilino.informacionPersonal.numeroDocumento }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div *ngIf="inquilino.propiedadesAlquiladas.length; else sinPropiedades">
+                      <span class="badge bg-primary">{{ inquilino.propiedadesAlquiladas.length }}</span>
+                      <small class="ms-2">propiedades</small>
+                    </div>
+                    <ng-template #sinPropiedades>
+                      <span class="badge bg-secondary">Sin propiedades</span>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <span [class]="getBadgeClass(inquilino.estado)">
+                      {{ inquilino.estado }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="mb-1">
+                      <small class="text-muted">Último pago:</small>
+                      <div>
+                        <span [class]="getPagoClass(inquilino.ultimoPagoEstado)">
+                          {{ inquilino.ultimoPagoEstado }}
+                        </span>
+                      </div>
+                    </div>
+                    <div *ngIf="inquilino.deuda && inquilino.estado === 'MOROSO'">
+                      <small class="text-danger">Deuda: ${{ inquilino.deuda }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-success" title="Contactar">
+                        <i class="bi bi-chat"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-warning" title="Historial">
+                        <i class="bi bi-clock-history"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                    </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">
+              Mostrando {{ inquilinos.length }} de {{ inquilinos.length }} inquilinos
+            </div>
+            <nav>
+              <ul class="pagination mb-0">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Inquilinos (Vista Alternativa) -->
+      <div class="mt-5">
+        <h4 class="mb-3">Vista de Tarjetas</h4>
+        <div class="row">
+          <div class="col-md-4 mb-3" *ngFor="let inquilino of inquilinos.slice(0, 3)">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                    <i class="bi bi-person fs-3 text-primary"></i>
+                  </div>
+                  <div>
+                    <h5 class="card-title mb-0">
+                      {{ inquilino.informacionPersonal.nombre }} {{ inquilino.informacionPersonal.apellido }}
+                    </h5>
+                    <p class="card-text text-muted small mb-0">Inquilino #{{ inquilino.id }}</p>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-house me-2 text-muted"></i>
+                    <span class="small">
+                      {{ inquilino.propiedadesAlquiladas.length || 0 }} propiedades
+                    </span>
+                  </div>
+                  <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-calendar-check me-2 text-muted"></i>
+                    <span class="small">
+                      Desde {{ inquilino.fechaRegistro | date:'MMM yyyy' }}
+                    </span>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-coin me-2 text-muted"></i>
+                    <span class="small">
+                      {{ inquilino.ultimoPagoEstado === 'AL DÍA' ? 'Al día' : 'Pendiente' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span [class]="getBadgeClass(inquilino.estado)">
+                    {{ inquilino.estado }}
+                  </span>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

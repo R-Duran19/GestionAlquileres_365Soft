@@ -1,0 +1,390 @@
+  <div class="container-fluid">
+      <!-- Header con acciones -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Pagos</h2>
+          <p class="text-muted mb-0">Gestión de pagos de alquiler</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Buscar pagos...">
+          </div>
+            <button class="btn btn-primary" routerLink="/pagos/nuevo">
+                <i class="bi bi-plus-circle me-2"></i>
+                Registrar Pago
+            </button>
+          <div class="dropdown">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-download me-2"></i>
+              Exportar
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-2"></i>Excel</a></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-2"></i>PDF</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#"><i class="bi bi-printer me-2"></i>Imprimir</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas Rápidas -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card border-primary border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-cash-stack text-primary fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Ingresos Mensuales</h6>
+                  <h3 class="mb-0">${{ calcularIngresosMensuales() }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-success border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-check-circle text-success fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Pagos al Día</h6>
+                  <h3 class="mb-0 text-success">{{ contarPorEstado('PAGADO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-warning border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-clock text-warning fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Pendientes</h6>
+                  <h3 class="mb-0 text-warning">{{ contarPorEstado('PENDIENTE') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-danger border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-exclamation-triangle text-danger fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Atrasados</h6>
+                  <h3 class="mb-0 text-danger">{{ contarPorEstado('ATRASADO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros Avanzados -->
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          <h6 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros Avanzados</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Estado</label>
+              <select class="form-select" [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option *ngFor="let estado of estadosPago" [value]="estado">{{ estado }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Mes</label>
+              <select class="form-select" [(ngModel)]="filtroMes" (ngModelChange)="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option *ngFor="let mes of meses" [value]="mes">{{ mes }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Método de Pago</label>
+              <select class="form-select" [(ngModel)]="filtroMetodo" (ngModelChange)="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-outline-secondary w-100" (click)="resetearFiltros()">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                Limpiar Filtros
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de Pagos Pendientes -->
+      <div class="alert alert-danger mb-4" *ngIf="pagosAtrasados.length > 0">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
+          <div class="flex-grow-1">
+            <strong>Tienes {{ pagosAtrasados.length }} pagos atrasados</strong> por un total de ${{ calcularTotalAtrasados() }}.
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-danger me-2">
+                <i class="bi bi-envelope me-1"></i>Enviar Recordatorio
+              </button>
+              <button class="btn btn-sm btn-danger">
+                <i class="bi bi-whatsapp me-1"></i>Contactar Directamente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Pagos -->
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Inquilino</th>
+                  <th>Propiedad</th>
+                  <th>Periodo</th>
+                  <th>Monto</th>
+                  <th>Estado</th>
+                  <th>Fecha Pago</th>
+                  <th>Método</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pago of pagosFiltrados">
+                  <td>
+                    <strong class="text-primary">PG-{{ pago.id.toString().padStart(4, '0') }}</strong>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="rounded-circle bg-light me-2 d-flex align-items-center justify-content-center" 
+                           style="width: 36px; height: 36px;">
+                        <i class="bi bi-person text-primary"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">{{ pago.inquilinoNombre }}</div>
+                        <small class="text-muted">{{ pago.inquilinoDocumento }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <div class="fw-medium">{{ pago.propiedadNombre }}</div>
+                      <small class="text-muted">{{ pago.propiedadDireccion }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="fw-medium">{{ pago.mes }} {{ pago.anio }}</div>
+                    <small class="text-muted">Vence: {{ pago.fechaVencimiento | date:'dd/MM' }}</small>
+                  </td>
+                  <td>
+                    <div class="fw-bold text-success">${{ pago.monto }}</div>
+                    <small class="text-muted">{{ pago.moneda }}</small>
+                  </td>
+                  <td>
+                    <span [class]="getBadgeClass(pago.estado)">
+                      {{ pago.estado }}
+                    </span>
+                  </td>
+                  <td>
+                    <div [ngClass]="{
+                      'text-danger': pago.estado === 'ATRASADO',
+                      'text-success': pago.estado === 'PAGADO'
+                    }">
+                      <div *ngIf="pago.fechaPago; else sinPagar">
+                        {{ pago.fechaPago | date:'dd/MM/yyyy' }}
+                      </div>
+                      <ng-template #sinPagar>
+                        <span class="text-muted">-</span>
+                      </ng-template>
+                      <div class="small">
+                        <span *ngIf="pago.diasAtraso && pago.diasAtraso > 0" class="text-danger">
+                          {{ pago.diasAtraso }} días atrasado
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      <i [ngClass]="[getIconoMetodo(pago.metodoPago), 'me-1']"></i>
+                      {{ pago.metodoPago }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <button *ngIf="pago.estado === 'PENDIENTE' || pago.estado === 'ATRASADO'" 
+                              class="btn btn-sm btn-success" title="Registrar Pago">
+                        <i class="bi bi-cash-coin"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-warning" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Sin resultados -->
+          <div *ngIf="pagosFiltrados.length === 0" class="text-center py-5">
+            <i class="bi bi-cash-coin fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No se encontraron pagos con los filtros seleccionados</h5>
+          </div>
+
+          <!-- Resumen Total -->
+          <div class="card mt-4 bg-light">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>Total Pagos:</span>
+                    <strong>{{ pagosFiltrados.length }}</strong>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>Monto Total:</span>
+                    <strong class="text-success">${{ calcularTotalFiltrado() }}</strong>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between">
+                    <span>Promedio por Pago:</span>
+                    <strong>${{ calcularPromedio() }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paginación -->
+          <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="pagosFiltrados.length > 0">
+            <div class="text-muted">
+              Mostrando {{ pagosFiltrados.length }} de {{ pagos.length }} pagos
+            </div>
+            <nav>
+              <ul class="pagination mb-0">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Métodos de Pago Distribución -->
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Distribución por Método de Pago</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <ul class="list-unstyled">
+                    <li *ngFor="let item of distribucionMetodos" class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <div [style.backgroundColor]="item.color" 
+                             style="width: 12px; height: 12px; border-radius: 2px;" class="me-2"></div>
+                        <span class="me-2">{{ item.metodo }}</span>
+                        <span class="badge bg-light text-dark ms-auto">{{ item.porcentaje }}%</span>
+                      </div>
+                      <div class="small text-muted">{{ item.cantidad }} pagos</div>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <!-- Espacio para gráfico circular (simulado) -->
+                  <div class="d-flex justify-content-center align-items-center h-100">
+                    <div class="text-center">
+                      <div class="position-relative d-inline-block">
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" 
+                             style="width: 150px; height: 150px;">
+                          <div class="text-center">
+                            <div class="fs-1">💵</div>
+                            <small class="text-muted">Métodos</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0"><i class="bi bi-calendar-month me-2"></i>Pagos del Mes Actual</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-3">
+                <span>Pagos Esperados:</span>
+                <strong>12</strong>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>Pagos Recibidos:</span>
+                <strong class="text-success">8</strong>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>Pagos Pendientes:</span>
+                <strong class="text-warning">3</strong>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Pagos Atrasados:</span>
+                <strong class="text-danger">1</strong>
+              </div>
+              <div class="progress mt-3" style="height: 10px;">
+                <div class="progress-bar bg-success" style="width: 66.7%"></div>
+                <div class="progress-bar bg-warning" style="width: 25%"></div>
+                <div class="progress-bar bg-danger" style="width: 8.3%"></div>
+              </div>
+              <div class="d-flex justify-content-between mt-2">
+                <small class="text-success">66.7% Pagados</small>
+                <small class="text-warning">25% Pendientes</small>
+                <small class="text-danger">8.3% Atrasados</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

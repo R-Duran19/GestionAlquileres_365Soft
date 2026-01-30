@@ -1,0 +1,299 @@
+<div class="container-fluid">
+      <!-- Header con acciones -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Contratos</h2>
+          <p class="text-muted mb-0">Gestión de contratos de alquiler</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Buscar contratos...">
+          </div>
+            <button class="btn btn-primary" routerLink="/contratos/nuevo">
+                <i class="bi bi-file-earmark-plus me-2"></i>
+                Nuevo Contrato
+            </button>
+        </div>
+      </div>
+
+      <!-- Alertas importantes -->
+      <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <div>
+          <strong>2 contratos próximos a vencer</strong> en los próximos 30 días.
+          <a href="#" class="alert-link">Revisar ahora</a>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Resumen -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card border-primary border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-files text-primary fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Total Contratos</h6>
+                  <h3 class="mb-0">{{ contratos.length }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-success border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-check-circle text-success fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Activos</h6>
+                  <h3 class="mb-0 text-success">{{ contarPorEstado('ACTIVO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-warning border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-clock text-warning fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Por Vencer</h6>
+                  <h3 class="mb-0 text-warning">{{ contarProximosVencer() }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-danger border-2">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+                  <i class="bi bi-x-circle text-danger fs-4"></i>
+                </div>
+                <div>
+                  <h6 class="text-muted mb-1">Vencidos</h6>
+                  <h3 class="mb-0 text-danger">{{ contarPorEstado('VENCIDO') }}</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestañas de filtros -->
+      <div class="mb-4">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <button class="nav-link active" (click)="filtrarPorEstado('TODOS')">
+              Todos <span class="badge bg-primary ms-1">{{ contratos.length }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" (click)="filtrarPorEstado('ACTIVO')">
+              Activos <span class="badge bg-success ms-1">{{ contarPorEstado('ACTIVO') }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" (click)="filtrarPorEstado('PENDIENTE')">
+              Pendientes <span class="badge bg-warning ms-1">{{ contarPorEstado('PENDIENTE') }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" (click)="filtrarPorEstado('VENCIDO')">
+              Vencidos <span class="badge bg-danger ms-1">{{ contarPorEstado('VENCIDO') }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" (click)="filtrarPorEstado('TERMINADO')">
+              Terminados <span class="badge bg-secondary ms-1">{{ contarPorEstado('TERMINADO') }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tabla de Contratos -->
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Propiedad</th>
+                  <th>Inquilino</th>
+                  <th>Duración</th>
+                  <th>Monto Mensual</th>
+                  <th>Estado</th>
+                  <th>Vencimiento</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contrato of contratosFiltrados">
+                  <td>
+                    <strong class="text-primary">CT-{{ contrato.id.toString().padStart(4, '0') }}</strong>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="rounded bg-light me-2" style="width: 40px; height: 40px;">
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                          <i class="bi bi-house text-primary"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="fw-medium">{{ contrato.propiedadNombre }}</div>
+                        <small class="text-muted">{{ contrato.propiedadDireccion }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="rounded-circle bg-light me-2 d-flex align-items-center justify-content-center" 
+                           style="width: 40px; height: 40px;">
+                        <i class="bi bi-person text-primary"></i>
+                      </div>
+                      <div>
+                        <div class="fw-medium">{{ contrato.inquilinoNombre }}</div>
+                        <small class="text-muted">{{ contrato.inquilinoDocumento }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <div>{{ contrato.fechaInicio | date:'dd/MM/yyyy' }} - {{ contrato.fechaFin | date:'dd/MM/yyyy' }}</div>
+                      <small class="text-muted">{{ contrato.duracionMeses }} meses</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="fw-bold text-success">${{ contrato.montoMensual }}</div>
+                    <small class="text-muted">{{ contrato.moneda }}/mes</small>
+                  </td>
+                  <td>
+                    <span [class]="getBadgeClass(contrato.estado)">
+                      {{ contrato.estado }}
+                    </span>
+                  </td>
+                  <td>
+                    <div [ngClass]="{
+                      'text-danger': esProximoVencer(contrato.fechaFin),
+                      'text-success': !esProximoVencer(contrato.fechaFin)
+                    }">
+                      <div>{{ contrato.fechaFin | date:'dd/MM/yyyy' }}</div>
+                      <small>{{ diasRestantes(contrato.fechaFin) }} días</small>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-success" title="Renovar">
+                        <i class="bi bi-arrow-repeat"></i>
+                      </button>
+                      <!-- {{contrato.id}} -->
+                      <button class="btn btn-sm btn-outline-warning" title="Editar" routerLink="/contratos/editar/">
+                        <i class="bi bi-pencil"></i>
+                        </button>
+                      <button class="btn btn-sm btn-outline-danger" title="Cancelar">
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+                      
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Sin resultados -->
+          <div *ngIf="contratosFiltrados.length === 0" class="text-center py-5">
+            <i class="bi bi-file-earmark-x fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted">No se encontraron contratos con el filtro seleccionado</h5>
+          </div>
+
+          <!-- Paginación -->
+          <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="contratosFiltrados.length > 0">
+            <div class="text-muted">
+              Mostrando {{ contratosFiltrados.length }} de {{ contratos.length }} contratos
+            </div>
+            <nav>
+              <ul class="pagination mb-0">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="#">
+                    <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contratos Próximos a Vencer -->
+      <div class="card mt-4 border-warning">
+        <div class="card-header bg-warning bg-opacity-10">
+          <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Contratos Próximos a Vencer (30 días)</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3" *ngFor="let contrato of contratosProximosVencer()">
+              <div class="card h-100 border-warning">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                      <h6 class="card-title mb-1">CT-{{ contrato.id.toString().padStart(4, '0') }}</h6>
+                      <p class="card-text text-muted small mb-0">{{ contrato.propiedadNombre }}</p>
+                    </div>
+                    <span class="badge bg-warning">Vence en {{ diasRestantes(contrato.fechaFin) }} días</span>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-person me-2 text-muted"></i>
+                      <span class="small">{{ contrato.inquilinoNombre }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="bi bi-calendar me-2 text-muted"></i>
+                      <span class="small">Vence: {{ contrato.fechaFin | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-cash-coin me-2 text-muted"></i>
+                      <span class="small">${{ contrato.montoMensual }}/mes</span>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-sm btn-outline-warning">
+                      <i class="bi bi-arrow-repeat me-1"></i>Renovar
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye me-1"></i>Ver
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

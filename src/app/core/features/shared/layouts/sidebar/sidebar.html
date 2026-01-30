@@ -1,0 +1,113 @@
+<nav class="sidebar bg-dark text-white vh-100 d-flex flex-column" style="width: 250px;">
+      <!-- Logo -->
+      <div class="sidebar-header p-4 border-bottom border-secondary">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+               style="width: 40px; height: 40px;">
+            <i class="bi bi-building text-white fs-5"></i>
+          </div>
+          <h5 class="ms-3 mb-0 fw-bold">PropManager</h5>
+        </div>
+      </div>
+
+      <!-- Menú de Navegación -->
+      <div class="sidebar-content flex-grow-1 p-3">
+        <ul class="nav flex-column">
+          <!-- Dashboard -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/dashboard" 
+               routerLinkActive="bg-primary"
+               [routerLinkActiveOptions]="{exact: true}">
+              <i class="bi bi-speedometer2 me-3"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <!-- Propiedades -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/propiedades"
+               routerLinkActive="bg-primary">
+              <i class="bi bi-house-door me-3"></i>
+              <span>Propiedades</span>
+            </a>
+          </li>
+
+          <!-- Inquilinos -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/inquilinos"
+               routerLinkActive="bg-primary">
+              <i class="bi bi-people me-3"></i>
+              <span>Inquilinos</span>
+            </a>
+          </li>
+
+          <!-- Contratos -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/contratos"
+               routerLinkActive="bg-primary">
+              <i class="bi bi-file-text me-3"></i>
+              <span>Contratos</span>
+            </a>
+          </li>
+
+          <!-- Pagos -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/pagos"
+               routerLinkActive="bg-primary">
+              <i class="bi bi-cash-coin me-3"></i>
+              <span>Pagos</span>
+              <span class="badge bg-success ms-auto">12</span>
+            </a>
+          </li>
+
+          <!-- Mantenimiento -->
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white d-flex align-items-center py-2 rounded" 
+               routerLink="/mantenimiento"
+               routerLinkActive="bg-primary">
+              <i class="bi bi-tools me-3"></i>
+              <span>Mantenimiento</span>
+              <span class="badge bg-warning ms-auto">3</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Menú Secundario -->
+        <div class="mt-5">
+          <h6 class="text-uppercase text-muted small mb-3">Reportes</h6>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+              <a class="nav-link text-white-50 d-flex align-items-center py-2 rounded" href="#">
+                <i class="bi bi-graph-up me-3"></i>
+                <span>Financiero</span>
+              </a>
+            </li>
+            <li class="nav-item mb-2">
+              <a class="nav-link text-white-50 d-flex align-items-center py-2 rounded" href="#">
+                <i class="bi bi-calendar-check me-3"></i>
+                <span>Ocupación</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer del Sidebar -->
+      <div class="sidebar-footer p-3 border-top border-secondary">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+               style="width: 36px; height: 36px;">
+            <i class="bi bi-question-lg"></i>
+          </div>
+          <div class="ms-3">
+            <small class="d-block text-muted">¿Necesitas ayuda?</small>
+            <a href="#" class="text-white small">Centro de Soporte</a>
+          </div>
+        </div>
+      </div>
+    </nav>

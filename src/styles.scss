@@ -1,1 +1,48 @@
 /* You can add global styles to this file, and also import other style files */
+/* Estilos para gráficos */
+canvas {
+  max-width: 100%;
+}
+
+/* Mejoras visuales para el dashboard */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+/* Timeline personalizado */
+.timeline-item {
+  position: relative;
+  padding-left: 20px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+  }
+  
+  &:nth-child(1)::before { background-color: #198754; }
+  &:nth-child(2)::before { background-color: #0d6efd; }
+  &:nth-child(3)::before { background-color: #ffc107; }
+  &:nth-child(4)::before { background-color: #0dcaf0; }
+  &:nth-child(5)::before { background-color: #6c757d; }
+}
+
+/* Personalización de tooltips */
+.tooltip {
+  font-size: 0.875rem;
+}
+
+/* Mejoras para tablas */
+.table-hover tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
