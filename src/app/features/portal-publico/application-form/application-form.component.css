@@ -1,8 +1,29 @@
 /* ==================== CONTAINER ==================== */
 .application-form-container {
   min-height: 100vh;
-  background: #ffffff;
-  padding: 120px 2rem 4rem; /* Padding-top de 120px para no tapar con el header */
+  background: #f8fafc;
+  padding: 120px 2rem 4rem;
+}
+
+/* Animaciones personalizadas */
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-progress-indeterminate {
+  width: 100%;
+  animation: progress-indeterminate 1.5s infinite linear;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
 /* ==================== SUCCESS STATE ==================== */

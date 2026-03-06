@@ -17,6 +17,17 @@ export interface PersonalData {
   current_address?: string; // Dirección actual (opcional)
   marital_status: MaritalStatus;
   number_of_dependents: number;
+  social_media?: SocialMedia;
+  profession?: string;
+  current_residence?: string;
+}
+
+export interface SocialMedia {
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+  other?: string;
 }
 
 export enum MaritalStatus {
@@ -96,6 +107,8 @@ export interface ApplicationDocument {
   type: DocumentType;
   url: string;
   uploaded_date?: string; // YYYY-MM-DD
+  ocr_data?: any;
+  ocr_status?: 'pendiente' | 'procesado' | 'error' | 'sin_datos';
 }
 
 export enum DocumentType {
@@ -103,6 +116,9 @@ export enum DocumentType {
   COMPROBANTE_INGRESOS = 'comprobante_ingresos',
   CARTA_RECOMENDACION = 'carta_recomendacion',
   CONTRATO_ANTERIOR = 'contrato_anterior',
+  FOLIO_REAL = 'folio_real',
+  TESTIMONIO = 'testimonio',
+  CERTIFICADO_CATASTRAL = 'certificado_catastral',
   OTRO = 'otro'
 }
 
@@ -119,6 +135,13 @@ export interface Application {
     full_name: string;
     current_address: string;
     identity_document: string;
+    social_media?: SocialMedia;
+  };
+  verification_data?: {
+    identity_verified?: boolean;
+    social_media_reviewed?: boolean;
+    ocr_results?: any;
+    verified_at?: string;
   };
   employment_data: {
     position: string;

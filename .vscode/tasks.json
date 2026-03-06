@@ -6,6 +6,11 @@
       "type": "npm",
       "script": "start",
       "isBackground": true,
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--experimental-require-module"
+        }
+      },
       "problemMatcher": {
         "owner": "typescript",
         "pattern": "$tsc",

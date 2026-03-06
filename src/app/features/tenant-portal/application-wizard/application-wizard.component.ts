@@ -260,7 +260,9 @@ export class ApplicationWizardComponent implements OnInit {
       national_id: ['', [Validators.required, Validators.minLength(8)]],
       current_address: [''], // Campo opcional para dirección actual
       marital_status: ['soltero', [Validators.required]],
-      number_of_dependents: [0, [Validators.required, Validators.min(0)]]
+      number_of_dependents: [0, [Validators.required, Validators.min(0)]],
+      facebook_url: [''],
+      instagram_url: ['']
     });
 
     // Employment History Form
@@ -452,7 +454,11 @@ export class ApplicationWizardComponent implements OnInit {
         // porque el backend dice que "should not exist" en personal_data.property
         // El backend obtiene estos datos del token JWT
         identity_document: personalInfo.national_id || '',
-        current_address: personalInfo.current_address || ''
+        current_address: personalInfo.current_address || '',
+        social_media: {
+          facebook: personalInfo.facebook_url || '',
+          instagram: personalInfo.instagram_url || ''
+        }
       },
       // Datos laborales - campos planos según el backend
       employment_data: {

@@ -26,6 +26,133 @@
       <div class="form-section">
         <h2>👤 Información Personal</h2>
 
+        <!-- OCR Upload Section Modernized: Two-Step Verification -->
+        <div class="ocr-workflow-container mb-8 space-y-4">
+          <p class="text-sm font-bold text-gray-700 ml-1 mb-2">Verificación de Identidad por IA</p>
+          
+          <!-- Error Alert con botón para cerrar -->
+          <div *ngIf="error" class="p-4 mb-4 text-sm text-red-800 rounded-xl bg-red-50 border border-red-200 animate-fadeIn flex justify-between items-center shadow-sm" role="alert">
+            <div class="flex items-center space-x-2">
+              <svg class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+              <span class="font-medium">{{ error }}</span>
+            </div>
+            <button (click)="error = null" class="text-red-500 hover:text-red-800 p-1">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Front Side -->
+            <div 
+              [class.bg-blue-50]="processingOcrFront"
+              [class.border-blue-300]="processingOcrFront"
+              [class.bg-green-50]="datosFrente && !processingOcrFront"
+              [class.border-green-300]="datosFrente && !processingOcrFront"
+              class="relative p-5 border-2 border-dashed border-gray-200 rounded-3xl bg-white hover:bg-gray-50 hover:border-indigo-300 transition-all duration-300 cursor-pointer group shadow-sm overflow-hidden"
+            >
+              <input type="file" (change)="onFileSelected($event, 'frente')" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" [disabled]="processingOcrFront" />
+              
+              <div class="flex flex-col items-center text-center space-y-3">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 duration-300"
+                  [class.bg-blue-100]="processingOcrFront"
+                  [class.bg-green-100]="datosFrente && !processingOcrFront"
+                  [class.bg-gray-100]="!processingOcrFront && !datosFrente"
+                >
+                  <svg *ngIf="!processingOcrFront && !datosFrente" class="w-7 h-7 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                  <div *ngIf="processingOcrFront" class="animate-spin h-6 w-6 border-3 border-indigo-600 border-t-transparent rounded-full font-bold"></div>
+                  <svg *ngIf="datosFrente && !processingOcrFront" class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div>
+                  <span class="block text-sm font-bold text-gray-800 tracking-tight">FRENTE</span>
+                  <span class="text-xs text-gray-400 font-medium">{{ datosFrente ? '¡Escaneado!' : 'Haz clic para subir' }}</span>
+                </div>
+                
+                <!-- Progress indicator if loading -->
+                <div *ngIf="processingOcrFront" class="w-full bg-gray-200 h-1 rounded-full mt-2 overflow-hidden">
+                  <div class="bg-indigo-600 h-full animate-progress-indeterminate"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Back Side -->
+            <div 
+              [class.bg-indigo-50]="processingOcrBack"
+              [class.border-indigo-300]="processingOcrBack"
+              [class.bg-green-50]="datosReverso && !processingOcrBack"
+              [class.border-green-300]="datosReverso && !processingOcrBack"
+              class="relative p-5 border-2 border-dashed border-gray-200 rounded-3xl bg-white hover:bg-gray-50 hover:border-indigo-300 transition-all duration-300 cursor-pointer group shadow-sm overflow-hidden"
+            >
+              <input type="file" (change)="onFileSelected($event, 'reverso')" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" [disabled]="processingOcrBack" />
+              
+              <div class="flex flex-col items-center text-center space-y-3">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 duration-300"
+                  [class.bg-indigo-100]="processingOcrBack"
+                  [class.bg-green-100]="datosReverso && !processingOcrBack"
+                  [class.bg-gray-100]="!processingOcrBack && !datosReverso"
+                >
+                  <svg *ngIf="!processingOcrBack && !datosReverso" class="w-7 h-7 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                  <div *ngIf="processingOcrBack" class="animate-spin h-6 w-6 border-3 border-indigo-600 border-t-transparent rounded-full font-bold"></div>
+                  <svg *ngIf="datosReverso && !processingOcrBack" class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div>
+                  <span class="block text-sm font-bold text-gray-800 tracking-tight">REVERSO</span>
+                  <span class="text-xs text-gray-400 font-medium">{{ datosReverso ? '¡Escaneado!' : 'Haz clic para subir' }}</span>
+                </div>
+
+                <!-- Progress indicator if loading -->
+                <div *ngIf="processingOcrBack" class="w-full bg-gray-200 h-1 rounded-full mt-2 overflow-hidden">
+                  <div class="bg-indigo-600 h-full animate-progress-indeterminate"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cross-Validation Alert -->
+          <div *ngIf="datosFrente && datosReverso" class="animate-fadeIn">
+            <div *ngIf="!validationResult" class="p-6 bg-white rounded-3xl border border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-indigo-50 rounded-lg">
+                  <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-gray-800">Verificación de Ambas Caras</p>
+                  <p class="text-[11px] text-gray-500">¿Deseas validar que la información coincida?</p>
+                </div>
+              </div>
+              <button type="button" (click)="validateConsistency()" [disabled]="isValidating" class="w-full sm:w-auto bg-indigo-600 text-white text-xs font-bold px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100 flex items-center justify-center space-x-2">
+                <span *ngIf="isValidating" class="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+                {{ isValidating ? 'Validando...' : 'Confirmar Verificación' }}
+              </button>
+            </div>
+            
+            <!-- Validation Results -->
+            <div *ngIf="validationResult" class="p-5 rounded-3xl border-2 transition-all duration-500"
+                 [class.bg-green-50]="validationResult.valid" [class.border-green-100]="validationResult.valid"
+                 [class.bg-red-50]="!validationResult.valid" [class.border-red-100]="!validationResult.valid">
+              <div class="flex items-center space-x-3">
+                <div [class.bg-green-100]="validationResult.valid" [class.bg-red-100]="!validationResult.valid" class="p-2 rounded-xl">
+                  <svg *ngIf="validationResult.valid" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                  <svg *ngIf="!validationResult.valid" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-bold" [class.text-green-800]="validationResult.valid" [class.text-red-800]="!validationResult.valid">
+                    {{ validationResult.valid ? 'Identidad Confirmada' : 'Inconsistencia de Datos' }}
+                  </p>
+                  <p class="text-[11px]" [class.text-green-600]="validationResult.valid" [class.text-red-500]="!validationResult.valid">
+                    {{ validationResult.valid ? 'La inteligencia artificial ha validado tus documentos.' : 'No se pudo verificar la relación entre el frente y reverso.' }}
+                  </p>
+                </div>
+              </div>
+              <ul *ngIf="!validationResult.valid && validationResult.errors?.length" class="mt-3 space-y-1 ml-11">
+                <li *ngFor="let err of validationResult.errors" class="text-[10px] text-red-600 flex items-center">
+                  <span class="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
+                  {{ err }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label for="full_name">Nombre Completo *</label>
@@ -122,6 +249,58 @@
             value="0"
           />
           <small class="form-hint">Personas que dependen económicamente de ti</small>
+        </div>
+
+        <!-- Social Networks Section -->
+        <div class="social-networks-section mt-4">
+          <h3>🔗 Redes Sociales</h3>
+          <p class="section-hint text-sm text-gray-500 mb-3">Links o nombres de usuario para que el administrador pueda revisarlos</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-group" *ngIf="formData.personal_data.social_media">
+              <label for="fb">Facebook</label>
+              <input
+                type="text"
+                id="fb"
+                class="form-control"
+                [(ngModel)]="formData.personal_data.social_media.facebook"
+                name="fb"
+                placeholder="Link o @usuario"
+              />
+            </div>
+            <div class="form-group" *ngIf="formData.personal_data.social_media">
+              <label for="ig">Instagram</label>
+              <input
+                type="text"
+                id="ig"
+                class="form-control"
+                [(ngModel)]="formData.personal_data.social_media.instagram"
+                name="ig"
+                placeholder="Link o @usuario"
+              />
+            </div>
+            <div class="form-group" *ngIf="formData.personal_data.social_media">
+              <label for="tw">Twitter/X</label>
+              <input
+                type="text"
+                id="tw"
+                class="form-control"
+                [(ngModel)]="formData.personal_data.social_media.twitter"
+                name="tw"
+                placeholder="Link o @usuario"
+              />
+            </div>
+            <div class="form-group" *ngIf="formData.personal_data.social_media">
+              <label for="li">LinkedIn</label>
+              <input
+                type="text"
+                id="li"
+                class="form-control"
+                [(ngModel)]="formData.personal_data.social_media.linkedin"
+                name="li"
+                placeholder="Link o perfil"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

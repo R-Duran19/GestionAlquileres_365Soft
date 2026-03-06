@@ -4,9 +4,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LucideAngularModule, User, Mail, Phone, Calendar, Building2, Briefcase, DollarSign, MapPin, CheckCircle2, Edit2, ArrowLeft } from 'lucide-angular';
+import { LucideAngularModule, User, Mail, Phone, Calendar, Building2, Briefcase, DollarSign, MapPin, CheckCircle2, Edit2, ArrowLeft, Facebook, Instagram } from 'lucide-angular';
 import { Property } from '../../../../core/models/property.model';
 import { PersonalData, EmploymentData, MaritalStatus, EmploymentType, RentalHistory } from '../../../../core/models/application.model';
+
+// Extendemos la interfaz PersonalData para incluir las redes sociales si no están
+interface ExtendedPersonalData extends PersonalData {
+  facebook_url?: string;
+  instagram_url?: string;
+}
 
 @Component({
   selector: 'app-step-3-preview-submit',
@@ -90,6 +96,26 @@ import { PersonalData, EmploymentData, MaritalStatus, EmploymentType, RentalHist
               <div class="info-label">Dependientes</div>
               <div class="info-value">{{ personalInfo()?.number_of_dependents || 0 }}</div>
             </div>
+            
+            @if (personalInfo()?.facebook_url || personalInfo()?.instagram_url) {
+              <div class="info-item full-width mt-2">
+                <div class="info-label mb-2">Redes Sociales</div>
+                <div class="flex flex-wrap gap-3">
+                  @if (personalInfo()?.facebook_url) {
+                    <div class="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg flex items-center border border-blue-100 shadow-sm">
+                      <lucide-icon [img]="Facebook" [size]="14" class="mr-2"></lucide-icon>
+                      <span class="text-xs font-bold">{{ personalInfo()?.facebook_url }}</span>
+                    </div>
+                  }
+                  @if (personalInfo()?.instagram_url) {
+                    <div class="bg-pink-50 text-pink-700 px-3 py-1.5 rounded-lg flex items-center border border-pink-100 shadow-sm">
+                      <lucide-icon [img]="Instagram" [size]="14" class="mr-2"></lucide-icon>
+                      <span class="text-xs font-bold">{{ personalInfo()?.instagram_url }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
           </div>
         </mat-card-content>
       </mat-card>
@@ -444,9 +470,11 @@ export class Step3PreviewSubmitComponent {
   readonly CheckCircle2 = CheckCircle2;
   readonly Edit2 = Edit2;
   readonly ArrowLeft = ArrowLeft;
+  readonly Facebook = Facebook;
+  readonly Instagram = Instagram;
 
   property = input.required<Property>();
-  personalInfo = input<Partial<PersonalData> | null>(null);
+  personalInfo = input<Partial<ExtendedPersonalData> | null>(null);
   employmentHistory = input<Partial<EmploymentData> | null>(null);
   rentalHistory = input<RentalHistory[]>([]);
   isSubmitting = input<boolean>(false);

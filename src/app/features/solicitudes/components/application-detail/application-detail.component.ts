@@ -9,7 +9,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   LucideAngularModule,
   ArrowLeft, User, Briefcase, Home, Phone, CheckCircle2,
-  XCircle, AlertCircle, FileText, Calendar, MessageSquare, Zap, Mail
+  XCircle, AlertCircle, FileText, Calendar, MessageSquare, Zap, Mail,
+  Link, Facebook, Instagram, Twitter, Linkedin, FileCheck, ExternalLink
 } from 'lucide-angular';
 import { ApplicationService } from '../../../../core/services/application.service';
 import { Application, ApplicationStatus } from '../../../../core/models/application.model';
@@ -41,6 +42,13 @@ export class ApplicationDetailComponent implements OnInit {
   readonly MessageSquare = MessageSquare;
   readonly Zap = Zap;
   readonly Mail = Mail;
+  readonly Link = Link;
+  readonly Facebook = Facebook;
+  readonly Instagram = Instagram;
+  readonly Twitter = Twitter;
+  readonly Linkedin = Linkedin;
+  readonly FileCheck = FileCheck;
+  readonly ExternalLink = ExternalLink;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -115,5 +123,27 @@ export class ApplicationDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  toggleVerification(type: string): void {
+    if (!this.application) return;
+
+    const currentVerification = this.application.verification_data || {};
+    const update: any = {};
+    
+    if (type === 'identity') {
+      update.identity_verified = !currentVerification.identity_verified;
+    } else if (type === 'social') {
+      update.social_media_reviewed = !currentVerification.social_media_reviewed;
+    }
+
+    const verificationData = { ...currentVerification, ...update };
+
+    this.applicationService.updateVerification(this.application.id, verificationData).subscribe({
+      next: (updatedApp) => {
+        this.application = updatedApp;
+        this.cdr.markForCheck();
+      }
+    });
   }
 }

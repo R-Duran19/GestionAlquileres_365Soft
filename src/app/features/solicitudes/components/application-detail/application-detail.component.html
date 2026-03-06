@@ -89,6 +89,93 @@
                   <span class="info-value">{{ app.personal_data.identity_document }}</span>
                 </div>
               </div>
+
+              <!-- Social Media -->
+              <div class="social-networks-detail mt-6 pt-6 border-t border-gray-100" *ngIf="app.personal_data.social_media">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-sm font-semibold text-gray-900 flex items-center mb-0">
+                    <lucide-icon [img]="Link" [size]="16" class="mr-2 text-primary-500"></lucide-icon>
+                    Redes Sociales
+                  </h3>
+                  <button mat-button color="primary" class="text-xs h-8" 
+                          (click)="toggleVerification('social')"
+                          [class.opacity-50]="app.verification_data?.social_media_reviewed">
+                    <lucide-icon [img]="FileCheck" [size]="14" class="mr-1"></lucide-icon>
+                    {{ app.verification_data?.social_media_reviewed ? 'Revisado' : 'Marcar Revisado' }}
+                  </button>
+                </div>
+                <div class="social-grid grid grid-cols-2 gap-3">
+                  <div class="social-item flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors" 
+                       *ngIf="app.personal_data.social_media.facebook">
+                    <lucide-icon [img]="Facebook" [size]="14" class="mr-2 text-blue-600"></lucide-icon>
+                    <span class="text-xs font-medium text-gray-700 truncate">{{ app.personal_data.social_media.facebook }}</span>
+                  </div>
+                  <div class="social-item flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors" 
+                       *ngIf="app.personal_data.social_media.instagram">
+                    <lucide-icon [img]="Instagram" [size]="14" class="mr-2 text-pink-600"></lucide-icon>
+                    <span class="text-xs font-medium text-gray-700 truncate">{{ app.personal_data.social_media.instagram }}</span>
+                  </div>
+                  <div class="social-item flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors" 
+                       *ngIf="app.personal_data.social_media.twitter">
+                    <lucide-icon [img]="Twitter" [size]="14" class="mr-2 text-sky-500"></lucide-icon>
+                    <span class="text-xs font-medium text-gray-700 truncate">{{ app.personal_data.social_media.twitter }}</span>
+                  </div>
+                  <div class="social-item flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors" 
+                       *ngIf="app.personal_data.social_media.linkedin">
+                    <lucide-icon [img]="Linkedin" [size]="14" class="mr-2 text-blue-800"></lucide-icon>
+                    <span class="text-xs font-medium text-gray-700 truncate">{{ app.personal_data.social_media.linkedin }}</span>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Verification Steps (OCR/Manual) -->
+          <mat-card class="section-card">
+            <mat-card-content>
+              <div class="section-header">
+                <div class="section-icon-wrapper purple">
+                  <lucide-icon [img]="CheckCircle2" [size]="24"></lucide-icon>
+                </div>
+                <h2>Verificación de Solicitud</h2>
+              </div>
+              <div class="verification-steps space-y-4">
+                <div class="step-item flex items-center justify-between p-3 rounded-lg border" 
+                     [class.border-green-200]="app.verification_data?.identity_verified"
+                     [class.bg-green-50]="app.verification_data?.identity_verified">
+                  <div class="flex items-center">
+                    <div class="step-icon mr-3" [class.text-green-600]="app.verification_data?.identity_verified">
+                      <lucide-icon [img]="User" [size]="20"></lucide-icon>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold">Cédula de Identidad</p>
+                      <p class="text-xs text-gray-500" *ngIf="app.verification_data?.identity_verified">Identidad confirmada manualmente o vía OCR</p>
+                      <p class="text-xs text-gray-400" *ngIf="!app.verification_data?.identity_verified">Pendiente de verificación</p>
+                    </div>
+                  </div>
+                  <button mat-icon-button (click)="toggleVerification('identity')" [color]="app.verification_data?.identity_verified ? 'primary' : ''">
+                    <lucide-icon [img]="CheckCircle2" [size]="20"></lucide-icon>
+                  </button>
+                </div>
+
+                <div class="step-item flex items-center justify-between p-3 rounded-lg border" 
+                     [class.border-green-200]="app.verification_data?.social_media_reviewed"
+                     [class.bg-green-50]="app.verification_data?.social_media_reviewed">
+                  <div class="flex items-center">
+                    <div class="step-icon mr-3" [class.text-green-600]="app.verification_data?.social_media_reviewed">
+                      <lucide-icon [img]="Link" [size]="20"></lucide-icon>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold">Redes Sociales</p>
+                      <p class="text-xs text-gray-500" *ngIf="app.verification_data?.social_media_reviewed">Revisado por administrador</p>
+                      <p class="text-xs text-gray-400" *ngIf="!app.verification_data?.social_media_reviewed">Pendiente de revisión</p>
+                    </div>
+                  </div>
+                  <button mat-icon-button (click)="toggleVerification('social')" [color]="app.verification_data?.social_media_reviewed ? 'primary' : ''">
+                    <lucide-icon [img]="CheckCircle2" [size]="20"></lucide-icon>
+                  </button>
+                </div>
+              </div>
             </mat-card-content>
           </mat-card>
 
@@ -153,6 +240,58 @@
                       <lucide-icon [img]="AlertCircle" [size]="16" class="detail-icon"></lucide-icon>
                       <span>{{ h.reason_for_leaving | titlecase }}</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Verified Documents (OCR Results) -->
+          <mat-card class="section-card documents-ocr-card" *ngIf="app.documents && app.documents.length > 0">
+            <mat-card-content>
+              <div class="section-header">
+                <div class="section-icon-wrapper green">
+                  <lucide-icon [img]="FileCheck" [size]="24"></lucide-icon>
+                </div>
+                <h2>Documentos Verificados (OCR)</h2>
+              </div>
+              <div class="ocr-documents-list space-y-4">
+                <div class="ocr-document-item border rounded-lg overflow-hidden bg-gray-50 flex flex-col" *ngFor="let doc of app.documents">
+                  <div class="ocr-doc-header p-3 bg-white border-b flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                       <lucide-icon [img]="FileText" [size]="18" class="text-gray-400"></lucide-icon>
+                       <span class="text-sm font-medium text-gray-700">{{ doc.type | titlecase }}</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase" 
+                          [ngClass]="doc.ocr_status === 'procesado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'">
+                      {{ doc.ocr_status }}
+                    </span>
+                  </div>
+                  
+                  <div class="ocr-doc-body p-3 grid grid-cols-2 gap-2 text-xs" *ngIf="doc.ocr_data">
+                    <div class="ocr-data-field">
+                      <span class="text-gray-500 block mb-0.5">Nombre Detectado:</span>
+                      <span class="font-medium text-gray-900">{{ doc.ocr_data.primer_nombre }} {{ doc.ocr_data.apellido_paterno }} {{ doc.ocr_data.apellido_materno }}</span>
+                    </div>
+                    <div class="ocr-data-field">
+                      <span class="text-gray-500 block mb-0.5">Número Documento:</span>
+                      <span class="font-medium text-gray-900">{{ doc.ocr_data.numero_cedula }}</span>
+                    </div>
+                    <div class="ocr-data-field">
+                      <span class="text-gray-500 block mb-0.5">Fecha Nacimiento:</span>
+                      <span class="font-medium text-gray-900">{{ doc.ocr_data.fecha_nacimiento }}</span>
+                    </div>
+                    <div class="ocr-data-field">
+                      <span class="text-gray-500 block mb-0.5">Fecha Expiración:</span>
+                      <span class="font-medium text-gray-900">{{ doc.ocr_data.fecha_expiracion }}</span>
+                    </div>
+                  </div>
+
+                  <div class="ocr-doc-footer p-2 bg-gray-100 flex justify-center">
+                    <a [href]="doc.url" target="_blank" class="text-[10px] text-primary-600 hover:text-primary-800 font-bold flex items-center">
+                      <lucide-icon [img]="ExternalLink" [size]="12" class="mr-1"></lucide-icon>
+                      VER DOCUMENTO ORIGINAL
+                    </a>
                   </div>
                 </div>
               </div>

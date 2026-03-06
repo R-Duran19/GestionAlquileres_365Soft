@@ -73,6 +73,15 @@ export class ApplicationService {
     });
   }
 
+  /**
+   * Update application verification data (Admin)
+   * PATCH /:slug/applications/:id/verification
+   */
+  updateVerification(id: number, verificationData: any): Observable<Application> {
+    const endpoint = this.slugService.buildApiEndpoint(`applications/${id}/verification`);
+    return this.apiHttp.patch<Application>(endpoint, verificationData);
+  }
+
   // ==================== TENANT ENDPOINTS ====================
 
   /**

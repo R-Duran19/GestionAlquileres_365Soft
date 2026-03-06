@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationService } from '../../../core/services/application.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SlugService } from '../../../core/services/slug.service';
+import { OcrService } from '../../../core/services/ocr.service';
 import {
   CreateApplicationDto,
   PersonalData,
@@ -12,7 +13,8 @@ import {
   RentalHistory,
   References,
   MaritalStatus,
-  EmploymentType
+  EmploymentType,
+  DocumentType
 } from '../../../core/models/application.model';
 
 @Component({
@@ -28,13 +30,31 @@ export class ApplicationFormComponent implements OnInit {
   private applicationService = inject(ApplicationService);
   private authService = inject(AuthService);
   private slugService = inject(SlugService);
+  private ocrService = inject(OcrService);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly FORM_DATA_KEY = 'pending_application_form';
 
   propertyId: number = 0;
   submitting = false;
   submitSuccess = false;
+  
+  // OCR Multi-step states
+  processingOcrFront = false;
+  processingOcrBack = false;
+  isValidating = false;
+  
+  datosFrente: any = null;
+  datosReverso: any = null;
+  validationResult: any = null;
+  
   error: string | null = null;
+  ocrMessage: string | null = null;
+
+  // Options for selects
+  maritalStatuses = Object.values(MaritalStatus);
+  employmentTypes = Object.values(EmploymentType);
+  documentTypes = Object.values(DocumentType);
 
   // Form data
   formData: CreateApplicationDto = {
@@ -49,10 +69,6 @@ export class ApplicationFormComponent implements OnInit {
     documents: [],
     additional_notes: ''
   };
-
-  // Options for selects
-  maritalStatuses = Object.values(MaritalStatus);
-  employmentTypes = Object.values(EmploymentType);
 
   ngOnInit(): void {
     console.log('📝 ApplicationFormComponent - ngOnInit iniciado');
@@ -106,8 +122,117 @@ export class ApplicationFormComponent implements OnInit {
       birth_date: '',
       national_id: '',
       marital_status: MaritalStatus.SOLTERO,
-      number_of_dependents: 0
+      number_of_dependents: 0,
+      social_media: {
+        facebook: '',
+        instagram: '',
+        twitter: '',
+        linkedin: ''
+      }
     };
+  }
+
+  // Document Upload and OCR Methods
+  onFileSelected(event: any, side: 'frente' | 'reverso'): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.error = null;
+    this.processOcr(file, side);
+  }
+
+  processOcr(file: File, side: 'frente' | 'reverso'): void {
+    if (side === 'frente') this.processingOcrFront = true;
+    else this.processingOcrBack = true;
+    
+    this.error = null;
+    this.validationResult = null;
+
+    this.ocrService.uploadAndProcess(file, `cedula_${side}`).subscribe({
+      next: (response) => {
+        setTimeout(() => {
+          if (side === 'frente') {
+            this.processingOcrFront = false;
+            this.datosFrente = response.ocr_data || response.datos_combinados;
+            if (this.datosFrente) this.fillFormWithOcrData(this.datosFrente);
+          } else {
+            this.processingOcrBack = false;
+            this.datosReverso = response.ocr_data || response.datos_combinados;
+            if (this.datosReverso) this.fillFormWithReversoData(this.datosReverso);
+          }
+
+          // Guardamos el documento en el listado para enviar
+          if (response.paths && response.paths.length > 0) {
+            this.formData.documents?.push({
+              type: side === 'frente' ? DocumentType.CEDULA_IDENTIDAD : DocumentType.OTRO,
+              url: response.paths[0],
+              ocr_data: response.ocr_data || response.datos_combinados,
+              ocr_status: 'procesado'
+            });
+          }
+
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: (err) => {
+        setTimeout(() => {
+          this.processingOcrFront = false;
+          this.processingOcrBack = false;
+          this.error = 'Error al procesar el OCR.';
+          console.error('OCR Error:', err);
+          this.cdr.detectChanges();
+        }, 0);
+      }
+    });
+  }
+
+  validateConsistency(): void {
+    if (!this.datosFrente || !this.datosReverso) return;
+    
+    this.isValidating = true;
+    this.ocrService.validateOcrData(this.datosFrente, this.datosReverso).subscribe({
+      next: (res) => {
+        setTimeout(() => {
+          this.validationResult = res;
+          this.isValidating = false;
+          this.cdr.detectChanges();
+        }, 0);
+      },
+      error: () => {
+        this.isValidating = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  fillFormWithOcrData(data: any): void {
+    if (data.primer_nombre && data.apellido_paterno) {
+      this.formData.personal_data.full_name = `${data.primer_nombre} ${data.apellido_paterno} ${data.apellido_materno || ''}`.trim();
+    }
+    if (data.numero_cedula) {
+      this.formData.personal_data.national_id = data.numero_cedula;
+    }
+    if (data.fecha_nacimiento) {
+      const parts = data.fecha_nacimiento.split('/');
+      if (parts.length === 3) {
+        this.formData.personal_data.birth_date = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+    }
+  }
+
+  fillFormWithReversoData(data: any): void {
+    if (data.estado_civil) {
+      // Intentamos mapear estado civil
+      const status = data.estado_civil.toLowerCase();
+      if (status.includes('soltero')) this.formData.personal_data.marital_status = MaritalStatus.SOLTERO;
+      else if (status.includes('casado')) this.formData.personal_data.marital_status = MaritalStatus.CASADO;
+    }
+    if (data.profesion) {
+      this.formData.personal_data.profession = data.profesion;
+    }
+    if (data.domicilio) {
+      this.formData.personal_data.current_residence = data.domicilio;
+    }
   }
 
   // Employment Data Methods
@@ -295,13 +420,10 @@ export class ApplicationFormComponent implements OnInit {
 
   // Validation Methods
   validatePersonalData(): boolean {
+    // Si hay datos de OCR o la intención es buena, no bloqueamos rígidamente
     const pd = this.formData.personal_data;
-    if (!pd.full_name || !pd.phone || !pd.email || !pd.birth_date || !pd.national_id) {
-      this.error = 'Por favor completa todos los campos obligatorios de información personal';
-      return false;
-    }
-    if (!pd.email.includes('@')) {
-      this.error = 'Por favor ingresa un email válido';
+    if (!pd.full_name || !pd.national_id) {
+      this.error = 'Por favor completa al menos Nombre y Cédula para continuar.';
       return false;
     }
     this.error = null;
@@ -309,13 +431,10 @@ export class ApplicationFormComponent implements OnInit {
   }
 
   validateEmploymentData(): boolean {
+    // Reducimos la rigidez para pruebas
     const cj = this.formData.employment_data.current_job;
-    if (!cj.company || !cj.position || !cj.salary || !cj.start_date || !cj.supervisor_name || !cj.supervisor_phone) {
-      this.error = 'Por favor completa todos los campos obligatorios de información laboral';
-      return false;
-    }
-    if (cj.salary <= 0) {
-      this.error = 'El salario debe ser mayor a 0';
+    if (!cj.company || !cj.position) {
+      this.error = 'Por favor completa la información básica de tu empleo.';
       return false;
     }
     this.error = null;
